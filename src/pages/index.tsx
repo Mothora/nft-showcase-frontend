@@ -48,9 +48,12 @@ const Home: NextPage = () => {
             Welcome to Mothora NFT
           </p>
           <NoSSR>
-            <p className="text-4xl">Showcase</p>
-            <p>Your Balance: (NFTs you own) {balance.data?.toString()}</p>
-            <div className="grid grid-cols-5 gap-4">
+            <div className="flex flex-col gap-2">
+              <p className="text-4xl">Showcase</p>
+              <p>Your Balance: (NFTs you own) {balance.data?.toString()}</p>
+            </div>
+
+            <div className="grid grid-cols-2 gap-4 md:grid-cols-3 lg:grid-cols-4">
               {Array.from(Array(10).keys()).map((i) => (
                 <NFTImage tokenId={i} />
               ))}
