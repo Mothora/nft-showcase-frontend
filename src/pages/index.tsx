@@ -5,37 +5,15 @@ import { useAccount, useContractRead, useContractWrite } from "wagmi";
 import { abi, contractAddress } from "~/contracts/NFT";
 import NoSSR from "react-no-ssr";
 import NFTImage from "~/components/nftImage";
+import Link from "next/link";
+
+import { MdCollectionsBookmark } from "react-icons/md";
+import { AiOutlineAppstoreAdd } from "react-icons/ai";
+import { FaBullseye } from "react-icons/fa";
+import EnsureWallet from "~/components/ensureWallet";
 
 const Home: NextPage = () => {
-  const [cid, setCid] = useState<string>("");
-
-  const mint = useContractWrite({
-    address: contractAddress,
-    abi: abi,
-    mode: "recklesslyUnprepared",
-    functionName: "mint",
-    args: [cid],
-  });
-  const id = useId();
-  const [tokenId, setTokenId] = useState<number>(0);
-
-  const [fetchTokenId, setFetchTokenId] = useState<number>(0);
-
-  const getTokenURI = useContractRead({
-    address: contractAddress,
-    abi: abi,
-    functionName: "tokenURI",
-    //@ts-ignore
-    args: [fetchTokenId],
-  });
   const account = useAccount();
-  const balance = useContractRead({
-    address: contractAddress,
-    abi: abi,
-    functionName: "balanceOf",
-    //@ts-ignore
-    args: [account.address],
-  });
 
   return (
     <>
@@ -46,86 +24,33 @@ const Home: NextPage = () => {
       </Head>
       <main className="flex min-h-screen w-full flex-col items-start">
         <div className="mt-4 flex w-full flex-col items-start gap-12 px-4">
-          {account.status === "disconnected" && (
-            <div className="w-full rounded-full bg-red-600 px-4 py-4 text-center">
-              <p className="text-2xl">Please connect your wallet</p>
-            </div>
-          )}
           <p className="text-4xl font-extrabold tracking-tight text-white">
-            Welcome to Mothora NFT
+            Welcome to the Mothora NFT Demo
           </p>
-
-          <NoSSR>
-            <div className="flex flex-col gap-2">
-              <p className="text-4xl">Showcase</p>
-              <p>Owned NFTs: {balance.data?.toString() || "Not Connected"}</p>
+          {account.status === "connected" ? (
+            <div className="flex w-full flex-col gap-4">
+              <Link href="/my-nfts">
+                <button className="btn-primary btn flex w-full gap-2">
+                  <MdCollectionsBookmark size={24} />
+                  My NFTs
+                </button>
+              </Link>
+              <Link href="/mint">
+                <button className="btn-primary btn flex w-full gap-2">
+                  <AiOutlineAppstoreAdd size={24} />
+                  Mint NFT
+                </button>
+              </Link>
+              <Link href="/get-by-id">
+                <button className="btn-primary btn flex w-full gap-2">
+                  <FaBullseye size={24} />
+                  Get NFT by Id
+                </button>
+              </Link>
             </div>
-
-            <div className="grid grid-cols-2 gap-4 md:grid-cols-3 lg:grid-cols-4">
-              {Array.from(Array(balance.data?.toNumber() || 0).keys()).map(
-                (i) => (
-                  <NFTImage
-                    address={account.address as string}
-                    tokenId={i}
-                    key={`${id}-${i}`}
-                  />
-                )
-              )}
-            </div>
-
-            <div className="flex w-full flex-col">
-              <span className="text-2xl">Mint</span>
-              <label htmlFor="blueprint">CID</label>
-              <p>
-                The image you want to attach to this NFT has a CID which will be
-                used through the IPFS gateway. Do not paste a link, only the
-                CID.
-              </p>
-              <input
-                type="text"
-                className="input"
-                value={cid}
-                onChange={(e) => setCid(e.target.value)}
-              />
-              <button
-                className="btn"
-                onClick={() => {
-                  mint.writeAsync().catch((e) => console.log(e));
-                }}
-              >
-                Write
-              </button>
-            </div>
-            <div className="flex w-full flex-col">
-              <span className="text-2xl">Fetch NFT by token ID</span>
-              <label htmlFor="blueprint">tokenId</label>
-              <input
-                type="number"
-                className="input"
-                value={tokenId || 0}
-                onChange={(e) => setTokenId(parseInt(e.target.value) || 0)}
-              />
-              <button
-                className="btn"
-                onClick={() => {
-                  setFetchTokenId(tokenId);
-                  getTokenURI.refetch().catch((e) => console.error(e));
-                }}
-              >
-                Fetch NFT by token ID
-              </button>
-              <div className="max-w-screen flex flex-col gap-1">
-                <span>Error: {getTokenURI.error?.message}</span>
-                <span>Data: {getTokenURI.data}</span>
-                {getTokenURI.data && (
-                  <img
-                    className="h-96 w-96"
-                    src={`https://${getTokenURI.data}.ipfs.w3s.link`}
-                  ></img>
-                )}
-              </div>
-            </div>
-          </NoSSR>
+          ) : (
+            <EnsureWallet />
+          )}
         </div>
       </main>
     </>
