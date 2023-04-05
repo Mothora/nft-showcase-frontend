@@ -7,16 +7,11 @@ import { ReactNode } from "react";
 
 import { configureChains, createClient, WagmiConfig } from "wagmi";
 import { arbitrumGoerli } from "wagmi/chains";
-import { alchemyProvider } from "wagmi/providers/alchemy";
 import { publicProvider } from "wagmi/providers/public";
-import { env } from "~/env.mjs";
 
 const { chains, provider, webSocketProvider } = configureChains(
   [arbitrumGoerli],
-  [
-    alchemyProvider({ apiKey: env.NEXT_PUBLIC_ALCHEMY_API_KEY }),
-    publicProvider(),
-  ]
+  [publicProvider()]
 );
 
 const { connectors } = getDefaultWallets({
