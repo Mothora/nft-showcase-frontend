@@ -28,7 +28,8 @@ const Home: NextPage = () => {
             Welcome to the Mothora NFT Demo
           </p>
           <NoSSR>
-            {account.status === "connected" ? (
+            <EnsureWallet />
+            {account.status === "connected" && (
               <div className="flex w-full flex-col gap-4">
                 <Link href="/my-nfts">
                   <button className="btn-primary btn flex w-full gap-2">
@@ -49,8 +50,6 @@ const Home: NextPage = () => {
                   </button>
                 </Link>
               </div>
-            ) : (
-              <EnsureWallet />
             )}
           </NoSSR>
         </div>
