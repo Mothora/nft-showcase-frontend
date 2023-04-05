@@ -27,30 +27,32 @@ const Home: NextPage = () => {
           <p className="text-4xl font-extrabold tracking-tight text-white">
             Welcome to the Mothora NFT Demo
           </p>
-          {account.status === "connected" ? (
-            <div className="flex w-full flex-col gap-4">
-              <Link href="/my-nfts">
-                <button className="btn-primary btn flex w-full gap-2">
-                  <MdCollectionsBookmark size={24} />
-                  My NFTs
-                </button>
-              </Link>
-              <Link href="/mint">
-                <button className="btn-primary btn flex w-full gap-2">
-                  <AiOutlineAppstoreAdd size={24} />
-                  Mint NFT
-                </button>
-              </Link>
-              <Link href="/get-by-id">
-                <button className="btn-primary btn flex w-full gap-2">
-                  <FaBullseye size={24} />
-                  Get NFT by Id
-                </button>
-              </Link>
-            </div>
-          ) : (
-            <EnsureWallet />
-          )}
+          <NoSSR>
+            {account.status === "connected" ? (
+              <div className="flex w-full flex-col gap-4">
+                <Link href="/my-nfts">
+                  <button className="btn-primary btn flex w-full gap-2">
+                    <MdCollectionsBookmark size={24} />
+                    My NFTs
+                  </button>
+                </Link>
+                <Link href="/mint">
+                  <button className="btn-primary btn flex w-full gap-2">
+                    <AiOutlineAppstoreAdd size={24} />
+                    Mint NFT
+                  </button>
+                </Link>
+                <Link href="/get-by-id">
+                  <button className="btn-primary btn flex w-full gap-2">
+                    <FaBullseye size={24} />
+                    Get NFT by Id
+                  </button>
+                </Link>
+              </div>
+            ) : (
+              <EnsureWallet />
+            )}
+          </NoSSR>
         </div>
       </main>
     </>

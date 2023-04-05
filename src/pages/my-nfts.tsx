@@ -1,5 +1,6 @@
 import { useId } from "react";
 import { MdCollectionsBookmark } from "react-icons/md";
+import NoSSR from "react-no-ssr";
 import { useAccount, useContractRead } from "wagmi";
 import EnsureWallet from "~/components/ensureWallet";
 import NFTImage from "~/components/nftImage";
@@ -16,14 +17,13 @@ export default function MyNFTs() {
     args: [account.address],
   });
   return (
-    <div>
+    <NoSSR>
       <div className="flex flex-col gap-2">
         <EnsureWallet />
-        <div className="flex items-center gap-2 text-4xl">
+        <div className="mb-4 flex items-center gap-2 text-4xl">
           <MdCollectionsBookmark size={32} />
-          <span>My NFTs</span>
+          <span>My NFTs ({balance.data?.toString() || "Connecting..."})</span>
         </div>
-        <p>Owned NFTs: {balance.data?.toString() || "Not Connected"}</p>
       </div>
       <div className="grid grid-cols-2 gap-4 md:grid-cols-3 lg:grid-cols-4">
         {Array.from(Array(balance.data?.toNumber() || 0).keys()).map((i) => (
@@ -34,6 +34,6 @@ export default function MyNFTs() {
           />
         ))}
       </div>
-    </div>
+    </NoSSR>
   );
 }
