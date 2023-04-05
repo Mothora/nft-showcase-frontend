@@ -1,6 +1,6 @@
 import Head from "next/head";
 import { type NextPage } from "next";
-import { useState } from "react";
+import { useId, useState } from "react";
 import { useAccount, useContractRead, useContractWrite } from "wagmi";
 import { abi, contractAddress } from "~/contracts/NFT";
 import NoSSR from "react-no-ssr";
@@ -16,6 +16,7 @@ const Home: NextPage = () => {
     functionName: "mint",
     args: [cid],
   });
+  const id = useId();
   const [tokenId, setTokenId] = useState<number>(0);
 
   const [fetchTokenId, setFetchTokenId] = useState<number>(0);
@@ -35,6 +36,7 @@ const Home: NextPage = () => {
     //@ts-ignore
     args: [account.address],
   });
+
   return (
     <>
       <Head>
@@ -44,24 +46,41 @@ const Home: NextPage = () => {
       </Head>
       <main className="flex min-h-screen w-full flex-col items-start">
         <div className="mt-4 flex w-full flex-col items-start gap-12 px-4">
+          {account.status === "disconnected" && (
+            <div className="w-full rounded-full bg-red-600 px-4 py-4 text-center">
+              <p className="text-2xl">Please connect your wallet</p>
+            </div>
+          )}
           <p className="text-4xl font-extrabold tracking-tight text-white">
             Welcome to Mothora NFT
           </p>
+
           <NoSSR>
             <div className="flex flex-col gap-2">
               <p className="text-4xl">Showcase</p>
-              <p>Your Balance: (NFTs you own) {balance.data?.toString()}</p>
+              <p>Owned NFTs: {balance.data?.toString() || "Not Connected"}</p>
             </div>
 
             <div className="grid grid-cols-2 gap-4 md:grid-cols-3 lg:grid-cols-4">
-              {Array.from(Array(10).keys()).map((i) => (
-                <NFTImage tokenId={i} />
-              ))}
+              {Array.from(Array(balance.data?.toNumber() || 0).keys()).map(
+                (i) => (
+                  <NFTImage
+                    address={account.address as string}
+                    tokenId={i}
+                    key={`${id}-${i}`}
+                  />
+                )
+              )}
             </div>
 
             <div className="flex w-full flex-col">
               <span className="text-2xl">Mint</span>
               <label htmlFor="blueprint">CID</label>
+              <p>
+                The image you want to attach to this NFT has a CID which will be
+                used through the IPFS gateway. Do not paste a link, only the
+                CID.
+              </p>
               <input
                 type="text"
                 className="input"
@@ -78,7 +97,7 @@ const Home: NextPage = () => {
               </button>
             </div>
             <div className="flex w-full flex-col">
-              <span className="text-2xl">Get Token URI (CID)</span>
+              <span className="text-2xl">Fetch NFT by token ID</span>
               <label htmlFor="blueprint">tokenId</label>
               <input
                 type="number"
@@ -93,7 +112,7 @@ const Home: NextPage = () => {
                   getTokenURI.refetch().catch((e) => console.error(e));
                 }}
               >
-                Fetch Token URI (CID)
+                Fetch NFT by token ID
               </button>
               <div className="max-w-screen flex flex-col gap-1">
                 <span>Error: {getTokenURI.error?.message}</span>
